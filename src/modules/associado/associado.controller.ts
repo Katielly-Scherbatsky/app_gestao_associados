@@ -27,32 +27,17 @@ export class AssociadoController {
   }
 
   @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number) {
-    const associado = await this.associadoService.findOne(id);
-    if (!associado) {
-      throw new NotFoundException(`Associado com ID ${id} não encontrado`);
-    }
-    return associado;
+  async findOne(@Param("id") id: number) {
+    return this.associadoService.findOne(id);
   }
 
   @Put(":id")
-  async update(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() payload: UpdateAssociadoDto
-  ) {
-    const updatedAssociado = await this.associadoService.update(id, payload);
-    if (!updatedAssociado) {
-      throw new NotFoundException(`Associado com ID ${id} não encontrado`);
-    }
-    return updatedAssociado;
+  async update(@Param("id") id: number, @Body() payload: UpdateAssociadoDto) {
+    return this.associadoService.update(id, payload);
   }
 
   @Delete(":id")
   async remove(@Param("id", ParseIntPipe) id: number) {
-    const deletedAssociado = await this.associadoService.remove(id);
-    if (!deletedAssociado) {
-      throw new NotFoundException(`Associado com ID ${id} não encontrado`);
-    }
-    return { message: `Associado com ID ${id} removido com sucesso` };
+    return this.associadoService.remove(id);
   }
 }
