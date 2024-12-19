@@ -1,16 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
   ParseIntPipe,
-  NotFoundException,
+  Post,
+  Put,
 } from "@nestjs/common";
-import { AssociadoService } from "./associado.service";
 import { CreateAssociadoDto, UpdateAssociadoDto } from "./associado.dto";
+import { AssociadoService } from "./associado.service";
 
 @Controller("associados")
 export class AssociadoController {

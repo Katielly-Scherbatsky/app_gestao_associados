@@ -36,7 +36,7 @@ async function bootstrap() {
   app.use(flashErrors);
   app.useGlobalFilters(new NotFoundExceptionFilter());
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 
 bootstrap();

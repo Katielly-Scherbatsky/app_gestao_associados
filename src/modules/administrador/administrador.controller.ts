@@ -1,19 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
   ParseIntPipe,
-  NotFoundException,
+  Post,
+  Put,
 } from "@nestjs/common";
-import { AdministradorService } from "./administrador.service";
 import {
   CreateAdministradorDto,
   UpdateAdministradorDto,
 } from "./administrador.dto";
+import { AdministradorService } from "./administrador.service";
 
 @Controller("administradores")
 export class AdministradorController {
