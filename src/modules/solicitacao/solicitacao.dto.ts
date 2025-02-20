@@ -1,23 +1,37 @@
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
 
 export class CreateSolicitacaoDto {
   @IsNotEmpty()
   @IsString()
-  Descricao: string;
+  descricao: string;
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(50)
-  Tipo: string;
+  tipo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  status: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  associadoId: number;
 }
 
 export class UpdateSolicitacaoDto {
   @IsNotEmpty()
   @IsString()
-  Descricao: string;
+  descricao: string;
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(50)
-  Tipo: string;
+  tipo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  status: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  associadoId: number;
 }

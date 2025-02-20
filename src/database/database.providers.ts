@@ -1,18 +1,18 @@
-import { DataSource } from 'typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { DataSource } from "typeorm";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 export const databaseProviders = [
   {
-    provide: 'DATA_SOURCE',
+    provide: "DATA_SOURCE",
     useFactory: async () => {
       const dataSource = new DataSource({
-        type: 'mysql',
-        host: 'localhost',
-        port: 3308,
-        username: 'root',
-        password: 'root',
-        database: 'tarefas_db',
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        type: "mysql",
+        host: "localhost",
+        port: 3306,
+        username: "root",
+        password: "root",
+        database: "gestao_associados_db",
+        entities: [__dirname + "/../**/*.entity{.ts,.js}"],
         namingStrategy: new SnakeNamingStrategy(),
         synchronize: true,
       });

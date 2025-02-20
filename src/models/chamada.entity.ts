@@ -1,20 +1,27 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Solicitacao } from "./solicitacao.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Associado } from "./associado.entity";
 
-@Entity("Chamada")
+@Entity({ name: "chamada" })
 export class Chamada {
   @PrimaryGeneratedColumn()
-  ID_Aviso: number;
+  id: number;
 
-  @Column()a
-  Descricao: string;
+  @Column({ type: "timestamp" })
+  data: string;
 
-  @Column({ length: 50 })
-  Tipo: string;
+  @Column()
+  presenca: boolean;
 
-  // @OneToMany(() => Aviso, (aviso) => aviso.Administrador)
-  // avisos: Aviso[];
+  @Column({ name: "associado_id" })
+  associadoId: number;
 
-  // @OneToMany(() => Solicitacao, (solicitacao) => solicitacao.Administrador)
-  // solicitacoes: Solicitacao[];
+  @OneToOne(() => Associado)
+  @JoinColumn({ name: "id" })
+  associado: Associado;
 }

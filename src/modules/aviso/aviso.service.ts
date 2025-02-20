@@ -22,7 +22,7 @@ export class AvisoService {
 
   async findOne(id: number): Promise<Aviso> {
     const aviso = await this.avisoRepository.findOne({
-      where: { ID_Aviso: id },
+      where: { id: id },
     });
     if (!aviso) {
       throw new NotFoundException(`Aviso com ID ${id} não encontrado`);

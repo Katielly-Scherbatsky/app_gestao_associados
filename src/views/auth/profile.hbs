@@ -1,8 +1,25 @@
 {{#> main}}
-  {{#*inline "content"}}
-    <h1 class="mt-5">Sobre {{ user.username }}!</h1>
-      <p class="lead">{{ user.username }}'s friend {{ user.pet.name }}</p>
-      <p><a href='/logout'>Deslogar</a></p>
-    </h1>
-  {{/inline}}
+{{#*inline "content"}}
+<div class="profile-container" style="max-width:600px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <h1>Perfil de {{associado.nome}}</h1>
+  <ul style="list-style: none; padding: 0; line-height: 1.8;">
+    <li><strong>CPF:</strong> {{associado.cpf}}</li>
+    <li><strong>Telefone:</strong> {{associado.telefone}}</li>
+    <li><strong>Faculdade:</strong> {{associado.faculdade_id}}</li>
+    <li><strong>Curso:</strong> {{associado.curso}}</li>
+    <li><strong>Poltrona:</strong> {{associado.poltrona}}</li>
+    <li><strong>Boleto:</strong> {{associado.boleto}}</li>
+    <li><strong>Anexos:</strong> {{associado.anexos}}</li>
+    <li>
+      <strong>Tipo:</strong>
+      {{#if associado.tipo}}
+      Admin
+      {{else}}
+      Associado
+      {{/if}}
+    </li>
+  </ul>
+  <p style="margin-top: 1.5rem;"><a href="/logout" style="color: #20332C; text-decoration: none;">Deslogar</a></p>
+</div>
+{{/inline}}
 {{/main}}

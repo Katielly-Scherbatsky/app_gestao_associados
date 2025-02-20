@@ -1,14 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Associado } from "./associado.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("Faculdade")
+@Entity({ name: "faculdade" })
 export class Faculdade {
   @PrimaryGeneratedColumn()
-  ID_Faculdade: number;
+  id: number;
 
-  @Column({ length: 100 })
-  Nome: string;
-
-  @OneToMany(() => Associado, (associado) => associado.Faculdade)
-  associados: Associado[];
+  @Column({ length: 200 })
+  nome: string;
 }

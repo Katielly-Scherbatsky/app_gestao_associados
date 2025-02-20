@@ -22,7 +22,7 @@ export class SolicitacaoService {
 
   async findOne(id: number): Promise<Solicitacao> {
     const solicitacao = await this.solicitacaoRepository.findOneBy({
-      ID_Aviso: id,
+      id: id,
     });
     if (!solicitacao) {
       throw new NotFoundException(`Solicitação com ID ${id} não encontrada`);

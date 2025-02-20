@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Associado</title>
+  <style>
+    :root {
+      --primary-color: #20332C;
+      --secondary-color: #1A7352;
+      --light-color: #fff;
+      --text-color: #333;
+      --background-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--background-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .login-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 40px;
+    }
+
+    .login-container {
+      background-color: var(--light-color);
+      width: 432px;
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 40px 60px;
+      transition: transform 0.3s ease;
+    }
+
+    .login-container:hover {
+      transform: translateY(-5px);
+    }
+
+    @media (max-width: 991px) {
+      .login-section {
+        padding: 0 20px;
+      }
+
+      .login-container {
+        padding: 20px;
+      }
+    }
+
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+      margin-bottom: 20px;
+    }
+
+    .title-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .form-section {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .input-group,
+    .input-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-field {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 12px 0;
+      border: none;
+      border-radius: 6px;
+      background-color: var(--primary-color);
+      color: var(--light-color);
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+      background-color: var(--secondary-color);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-section">
+    <div class="login-container">
+      <div class="content-container">
+        <div class="title-section">
+          <div class="logo">{{title}}</div>
+          <div class="login-title">Cadastro de Associado</div>
+          <div class="subtitle">Preencha os dados abaixo</div>
+        </div>
+      </div>
+      <form id="cadastro-form" class="form-section">
+        <div class="form-container">
+          <div class="input-group">
+            <label for="nome" class="visually-hidden">Nome</label>
+            <input id="nome" class="input-field" type="text" placeholder="Nome" aria-label="Nome" required>
+          </div>
+          <div class="input-item">
+            <label for="cpf" class="visually-hidden">CPF</label>
+            <input id="cpf" class="input-field" type="text" placeholder="CPF" aria-label="CPF" required>
+          </div>
+          <div class="input-item">
+            <label for="telefone" class="visually-hidden">Telefone</label>
+            <input id="telefone" class="input-field" type="text" placeholder="Telefone" aria-label="Telefone" required>
+          </div>
+          <div class="input-item">
+            <label for="faculdade_id" class="visually-hidden">Faculdade</label>
+            <input id="faculdade_id" class="input-field" type="text" placeholder="Faculdade" aria-label="Faculdade" required>
+          </div>
+          <div class="input-item">
+            <label for="curso" class="visually-hidden">Curso</label>
+            <input id="curso" class="input-field" type="text" placeholder="Curso" aria-label="Curso" required>
+          </div>
+          <div class="input-item">
+            <label for="poltrona" class="visually-hidden">Poltrona</label>
+            <input id="poltrona" class="input-field" type="number" placeholder="Poltrona" aria-label="Poltrona" required>
+          </div>
+          <div class="input-item">
+            <label for="boleto" class="visually-hidden">Boleto</label>
+            <input id="boleto" class="input-field" type="text" placeholder="Boleto" aria-label="Boleto" required>
+          </div>
+          <div class="input-item">
+            <label for="anexos" class="visually-hidden">Anexos</label>
+            <input id="anexos" class="input-field" type="file" aria-label="Anexos" required>
+          </div>
+        </div>
+        <div class="button-container">
+          <button type="submit" class="submit-button">Cadastrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("cadastro-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const nome = document.getElementById("nome").value;
+        const cpf = document.getElementById("cpf").value;
+        const telefone = document.getElementById("telefone").value;
+        const faculdade_id = document.getElementById("faculdade_id").value;
+        const curso = document.getElementById("curso").value;
+        const poltrona = document.getElementById("poltrona").value;
+        const boleto = document.getElementById("boleto").value;
+        const anexos = document.getElementById("anexos").files[0];
+
+        const formData = new FormData();
+        formData.append("nome", nome);
+        formData.append("cpf", cpf);
+        formData.append("telefone", telefone);
+        formData.append("faculdade_id", faculdade_id);
+        formData.append("curso", curso);
+        formData.append("poltrona", poltrona);
+        formData.append("boleto", boleto);
+        formData.append("anexos", anexos);
+
+        const response = await fetch("/cadastrar-associado", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("Associado cadastrado com sucesso!");
+          window.location.href = "/login";
+        } else {
+          alert("Erro: " + result.message);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

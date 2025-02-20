@@ -7,44 +7,62 @@ import {
   Res,
   UseFilters,
   UseGuards,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
-import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
-import { LoginGuard } from 'src/common/guards/login.guard';
+} from "@nestjs/common";
+import { Response } from "express";
+import { AuthExceptionFilter } from "src/common/filters/auth-exceptions.filter";
+import { AuthenticatedGuard } from "src/common/guards/authenticated.guard";
+import { LoginGuard } from "src/common/guards/login.guard";
 
-@Controller('auth')
+@Controller("auth")
 @UseFilters(AuthExceptionFilter)
 export class AuthController {
-  @Get('/login')
-  @Render('auth/login')
+  @Get("/login")
+  @Render("auth/login")
   index(@Request() req): { message: string } {
-    return { message: req.flash('loginError') };
+    return { message: req.flash("loginError") };
   }
 
   @UseGuards(LoginGuard)
-  @Post('/login')
+  @Post("/login")
   login(@Res() res: Response) {
-    res.redirect('/home');
+    res.redirect("/home");
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('/home')
-  @Render('home')
+  // @UseGuards(AuthenticatedGuard)
+  @Get("/home")
+  @Render("home")
   getHome(@Request() req) {
     return { user: req.user };
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('/profile')
-  @Render('auth/profile')
+  // @UseGuards(AuthenticatedGuard)
+  @Get("/profile")
+  @Render("auth/profile")
   getProfile(@Request() req) {
     return { user: req.user };
   }
 
-  @Get('/logout')
+  @Get("/associado")
+  @Render("auth/associado")
+  getAssociado(@Request() req) {
+    return { user: req.user };
+  }
+
+  @Get("/chamada")
+  @Render("auth/chamada")
+  getChamada(@Request() req) {
+    return { user: req.user };
+  }
+
+  @Get("/aviso")
+  @Render("auth/aviso")
+  getAviso(@Request() req) {
+    return { user: req.user };
+  }
+
+  @Get("/logout")
   logout(@Request() req, @Res() res: Response) {
     req.session.destroy();
-    res.redirect('/');
+    res.redirect("/");
   }
 }

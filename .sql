@@ -1,86 +1,58 @@
-Associado
-CREATE TABLE Associado (
-  ID_Associado INT PRIMARY KEY AUTO_INCREMENT,
-  Nome VARCHAR(100),
-  CPF VARCHAR(14),
-  Telefone VARCHAR(15),
-  Faculdade_ID INT,
-  Curso VARCHAR(100),
-  Poltrona INT,
-  Boleto VARCHAR(255),
-  Anexos VARCHAR(255),
-  FOREIGN KEY (Faculdade_ID) REFERENCES Faculdade(ID_Faculdade)
+CREATE TABLE associado (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(100),
+  cpf VARCHAR(14),
+  telefone VARCHAR(15),
+  faculdade_id INT,
+  curso VARCHAR(100),
+  poltrona INT,
+  boleto VARCHAR(255),
+  anexos VARCHAR(255),
+  tipo INT, (associado ou admin)
+  FOREIGN KEY (faculdade_id) REFERENCES faculdade(id)
 );
 
-
-Administrador
-CREATE TABLE Administrador (
-  ID_Administrador INT PRIMARY KEY AUTO_INCREMENT,
-  Nome VARCHAR(100),
-  CPF VARCHAR(14),
-  Login VARCHAR(50),
-  Senha VARCHAR(50)
+CREATE TABLE faculdade (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(200)
 );
 
-Faculdade
-CREATE TABLE Faculdade (
-  ID_Faculdade INT PRIMARY KEY AUTO_INCREMENT,
-  Nome VARCHAR(100)
+CREATE TABLE dia_semana (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(15)
 );
 
-Dia_Semana
-CREATE TABLE Dia_Semana (
-  ID_Dia INT PRIMARY KEY AUTO_INCREMENT,
-  Nome_Dia VARCHAR(15)
+CREATE TABLE aviso (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  descricao VARCHAR(200),
+  tipo VARCHAR(50),
+  data DATE,
+  associado_id INT,
+  FOREIGN KEY (associado_id) REFERENCES associado(id)
 );
 
-Aviso
-CREATE TABLE Aviso (
-  ID_Aviso INT PRIMARY KEY AUTO_INCREMENT,
-  Descricao TEXT,
-  Tipo VARCHAR(50),
-  Data DATE,
-  ID_Administrador INT,
-  FOREIGN KEY (ID_Administrador) REFERENCES Administrador(ID_Administrador)
+CREATE TABLE solicitacao (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  tipo VARCHAR(50),
+  descricao VARCHAR(200),
+  data DATE,
+  status VARCHAR(20),
+  associado_id INT,
+  FOREIGN KEY (associado_id) REFERENCES associado(id),
 );
 
-Solicitação
-CREATE TABLE Solicitacao (
-  ID_Solicitacao INT PRIMARY KEY AUTO_INCREMENT,
-  Tipo VARCHAR(50),
-  Descricao TEXT,
-  Data DATE,
-  Status VARCHAR(20),
-  ID_Associado INT,
-  ID_Administrador INT,
-  FOREIGN KEY (ID_Associado) REFERENCES Associado(ID_Associado),
-  FOREIGN KEY (ID_Administrador) REFERENCES Administrador(ID_Administrador)
+CREATE TABLE chamada (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  data DATE,
+  presenca BOOLEAN,
+  associado_id INT,
+  FOREIGN KEY (associado_id) REFERENCES associado(id)
 );
 
-Chamada
-CREATE TABLE Chamada (
-  ID_Chamada INT PRIMARY KEY AUTO_INCREMENT,
-  Data DATE,
-  Presenca BOOLEAN,
-  ID_Associado INT,
-  FOREIGN KEY (ID_Associado) REFERENCES Associado(ID_Associado)
-);
-
-Relatório
-CREATE TABLE Relatorio (
-  ID_Relatorio INT PRIMARY KEY AUTO_INCREMENT,
-  Data DATE,
-  Valor_Total DECIMAL(10, 2),
-  Valor_Associado DECIMAL(10, 2),
-  ID_Associado INT,
-  FOREIGN KEY (ID_Associado) REFERENCES Associado(ID_Associado)
-);
-
-Associado_Dia_Semana (Tabela de Relacionamento N)
-CREATE TABLE Associado_Dia_Semana (
-  ID_Associado INT,
-  ID_Dia INT,
-  PRIMARY KEY (ID_Associado, ID_Dia),
-  FOREIGN KEY (ID_Associado) REFERENCES Associado(ID_Associado),
-  FOREIGN KEY (ID_Dia) REFERENCES Dia_Semana(ID_Dia)
+CREATE TABLE associado_dia_semana (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  associado_id INT,
+  dia_semana_id INT,
+  FOREIGN KEY (associado_id) REFERENCES associado(id),
+  FOREIGN KEY (dia_semana_id) REFERENCES dia_semana(id)
 );

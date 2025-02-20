@@ -1,21 +1,37 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateAvisoDto {
   @IsNotEmpty()
   @IsString()
-  Descricao: string;
+  descricao: string;
 
   @IsNotEmpty()
   @IsString()
-  Tipo: string;
+  tipo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  data: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  associadoId: number;
 }
 
 export class UpdateAvisoDto {
   @IsNotEmpty()
   @IsString()
-  Descricao: string;
+  descricao: string;
 
   @IsNotEmpty()
   @IsString()
-  Tipo: string;
+  tipo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  data: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  associadoId: number;
 }

@@ -1,44 +1,45 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { Faculdade } from './faculdade.entity';
-import { Chamada } from './chamada.entity';
-import { Solicitacao } from './solicitacao.entity';
-import { Relatorio } from './relatorio.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Faculdade } from "./faculdade.entity";
 
-@Entity('Associado')
+@Entity({ name: "associado" })
 export class Associado {
   @PrimaryGeneratedColumn()
-  ID_Associado: number;
+  id: number;
 
   @Column({ length: 100 })
-  Nome: string;
+  nome: string;
 
   @Column({ length: 14 })
-  CPF: string;
+  cpf: string;
 
   @Column({ length: 15 })
-  Telefone: string;
+  telefone: string;
 
-  @ManyToOne(() => Faculdade, (faculdade) => faculdade.associados)
-  Faculdade: Faculdade;
+  @Column({ name: "faculdade_id" })
+  faculdadeId: number;
+
+  @OneToOne(() => Faculdade)
+  @JoinColumn({ name: "id" })
+  faculdade: Faculdade;
 
   @Column({ length: 100 })
-  Curso: string;
+  curso: string;
 
   @Column()
-  Poltrona: number;
+  poltrona: number;
 
   @Column({ length: 255, nullable: true })
-  Boleto: string;
+  boleto: string;
 
   @Column({ length: 255, nullable: true })
-  Anexos: string;
+  anexos: string;
 
-  // @OneToMany(() => Chamada, (chamada) => chamada.Associado)
-  // chamadas: Chamada[];
-
-  // @OneToMany(() => Solicitacao, (solicitacao) => solicitacao.Associado)
-  // solicitacoes: Solicitacao[];
-
-  // @OneToMany(() => Relatorio, (relatorio) => relatorio.Associado)
-  // relatorios: Relatorio[];
+  @Column()
+  tipo: number;
 }

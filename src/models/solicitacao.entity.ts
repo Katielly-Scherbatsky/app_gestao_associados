@@ -1,19 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Associado } from "./associado.entity";
 
-@Entity("Solicitacao")
+@Entity({ name: "solicitacao" })
 export class Solicitacao {
   @PrimaryGeneratedColumn()
-  ID_Aviso: number;
+  id: number;
 
-  @Column()a
-  Descricao: string;
+  @Column()
+  descricao: string;
 
   @Column({ length: 50 })
-  Tipo: string;
+  tipo: string;
 
-  // @OneToMany(() => Aviso, (aviso) => aviso.Administrador)
-  // avisos: Aviso[];
+  @Column()
+  status: string;
 
-  // @OneToMany(() => Solicitacao, (solicitacao) => solicitacao.Administrador)
-  // solicitacoes: Solicitacao[];
+  @Column({ name: "associado_id" })
+  associadoId: number;
+
+  @OneToOne(() => Associado)
+  @JoinColumn({ name: "id" })
+  associado: Associado;
 }

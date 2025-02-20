@@ -22,7 +22,7 @@ export class FaculdadeService {
 
   async findOne(id: number): Promise<Faculdade> {
     const faculdade = await this.faculdadeRepository.findOne({
-      where: { ID_Faculdade: id },
+      where: { id: id },
       relations: ["associados"],
     });
     if (!faculdade) {

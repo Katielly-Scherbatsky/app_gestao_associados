@@ -1,21 +1,29 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateChamadaDto {
   @IsNotEmpty()
   @IsString()
-  Descricao: string;
+  data: string;
 
   @IsNotEmpty()
   @IsString()
-  Tipo: string;
+  presenca: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  associadoId: number;
 }
 
 export class UpdateChamadaDto {
   @IsNotEmpty()
   @IsString()
-  Descricao: string;
+  data: string;
 
   @IsNotEmpty()
   @IsString()
-  Tipo: string;
+  presenca: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  associadoId: number;
 }
