@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
+import * as cookieParser from "cookie-parser";
 import * as session from "express-session";
 import * as hbs from "hbs";
 import * as hbsUtils from "hbs-utils";
@@ -15,11 +16,14 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   hbsRegisterHelpers(hbs);
-  hbsUtils(hbs).registerWatchedPartials(join(__dirname, "/views/layouts"));
+  hbsUtils(hbs).registerWatchedPartials(
+    join(__dirname, "..", "src", "views", "layouts")
+  );
   app.useStaticAssets(join(__dirname, "..", "public"));
-  app.setBaseViewsDir(join(__dirname, "/views"));
-  hbs.registerPartials(join(__dirname, "/views/layouts/partials"));
+  app.setBaseViewsDir(join(__dirname, "..", "src", "views"));
+  hbs.registerPartials(join(__dirname, "..", "src", "views", "partials"));
   app.setViewEngine("hbs");
+  app.set("view options", { layout: "layouts/main" });
 
   app.use(
     session({
@@ -29,6 +33,7 @@ async function bootstrap() {
     })
   );
 
+  app.use(cookieParser());
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(flash());

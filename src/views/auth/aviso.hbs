@@ -1,206 +1,112 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastrar Aviso</title>
-  <style>
-    :root {
-      --primary-color: #20332C;
-      --secondary-color: #1A7352;
-      --light-color: #fff;
-      --text-color: #333;
-      --background-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: var(--background-gradient);
-    }
-
-    .aviso-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 65px 80px;
-    }
-
-    @media (max-width: 991px) {
-      .aviso-section {
-        padding: 20px;
-      }
-    }
-
-    .aviso-container {
-      background-color: var(--light-color);
-      width: 432px;
-      max-width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 40px 60px;
-      transition: transform 0.3s ease;
-    }
-
-    .aviso-container:hover {
-      transform: translateY(-5px);
-    }
-
-    @media (max-width: 991px) {
-      .aviso-container {
-        padding: 20px;
-      }
-    }
-
-    .title-section {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .aviso-title {
-      font-size: 28px;
-      font-weight: bold;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: var(--text-color);
-      margin: 0;
-    }
-
-    .form-section {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    .form-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .input-item {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .input-field {
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      transition: border-color 0.3s ease;
-    }
-
-    .input-field:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
-
-    .button-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 30px;
-    }
-
-    .submit-button {
-      width: 100%;
-      padding: 12px 0;
-      border: none;
-      border-radius: 6px;
-      background-color: var(--primary-color);
-      color: var(--light-color);
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .submit-button:hover {
-      background-color: var(--secondary-color);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="aviso-section">
-    <div class="aviso-container">
-      <div class="title-section">
-        <div class="aviso-title">Cadastrar Aviso</div>
-        <div class="subtitle">Preencha os dados do aviso</div>
+<div class="aviso-section">
+  <div class="aviso-container">
+    <div class="title-section">
+      <div class="aviso-title">Avisos</div>
+      <div class="subtitle">Confira os avisos já cadastrados</div>
+      <div class="button-container">
+        <button id="open-modal" class="submit-button">Novo Aviso</button>
       </div>
-      <form id="cadastro-aviso-form" class="form-section">
-        <div class="form-container">
-          <div class="input-item">
-            <label for="descricao">Descrição</label>
-            <input id="descricao" class="input-field" type="text" placeholder="Descrição do aviso" required>
-          </div>
-          <div class="input-item">
-            <label for="tipo">Tipo</label>
-            <select id="tipo" class="input-field" required>
-              <option value="">Selecione o tipo</option>
-              <option value="Urgente">Urgente</option>
-              <option value="Informativo">Informativo</option>
-              <option value="Lembrete">Lembrete</option>
-            </select>
-          </div>
-          <div class="input-item">
-            <label for="data">Data</label>
-            <input id="data" class="input-field" type="date" required>
-          </div>
-        </div>
-        <div class="button-container">
-          <button type="submit" class="submit-button">Cadastrar Aviso</button>
-        </div>
-      </form>
     </div>
+    <ul class="avisos-list" id="avisos-list">
+    </ul>
   </div>
+</div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const form = document.getElementById("cadastro-aviso-form");
+<div class="modal" id="modal-new-aviso">
+  <div class="modal-content">
+    <span class="close-button" id="close-modal">&times;</span>
+    <div class="title-section">
+      <div class="aviso-title">Novo Aviso</div>
+      <div class="subtitle">Preencha os dados do aviso</div>
+    </div>
+    <form id="cadastro-aviso-form" class="form-section">
+      <div class="form-container">
+        <div class="input-item">
+          <label for="descricao">Descrição</label>
+          <input id="descricao" class="input-field" type="text" placeholder="Descrição do aviso" required>
+        </div>
+        <div class="input-item">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" class="input-field" required>
+            <option value="">Selecione o tipo</option>
+            <option value="Urgente">Urgente</option>
+            <option value="Informativo">Informativo</option>
+            <option value="Lembrete">Lembrete</option>
+          </select>
+        </div>
+        <div class="input-item">
+          <label for="data">Data</label>
+          <input id="data" class="input-field" type="date" required>
+        </div>
+      </div>
+      <div class="button-container">
+        <button type="submit" class="submit-button">Cadastrar Aviso</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-      form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const descricao = document.getElementById("descricao").value;
-        const tipo = document.getElementById("tipo").value;
-        const data = document.getElementById("data").value;
-
-        const aviso = {
-          descricao,
-          tipo,
-          data,
-        };
-
-        try {
-          const response = await fetch("/cadastrar-aviso", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(aviso),
-          });
-
-          const result = await response.json();
-
-          if (response.ok) {
-            alert("Aviso cadastrado com sucesso!");
-            form.reset(); // Limpa o formulário após o cadastro
-          } else {
-            alert("Erro: " + result.message);
-          }
-        } catch (error) {
-          alert("Erro ao cadastrar aviso: " + error.message);
-        }
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    async function carregarAvisos() {
+      const avisos = [
+        { id: 1, descricao: "Manutenção programada para amanhã", tipo: "Informativo", data: "2025-02-26" },
+        { id: 2, descricao: "Nova atualização disponível", tipo: "Urgente", data: "2025-02-24" },
+        { id: 3, descricao: "Lembrete: Reunião semanal", tipo: "Lembrete", data: "2025-02-20" }
+      ];
+      const listaAvisos = document.getElementById("avisos-list");
+      listaAvisos.innerHTML = "";
+      avisos.forEach(aviso => {
+        const item = document.createElement("li");
+        item.className = "aviso-item";
+        item.textContent = `${aviso.data} - [${aviso.tipo}] ${aviso.descricao}`;
+        listaAvisos.appendChild(item);
       });
-    });
-  </script>
-</body>
+    }
 
-</html>
+    await carregarAvisos();
+
+    const modal = document.getElementById("modal-new-aviso");
+    const openModalBtn = document.getElementById("open-modal");
+    const closeModalBtn = document.getElementById("close-modal");
+
+    openModalBtn.addEventListener("click", function () {
+      modal.style.display = "flex";
+    });
+    closeModalBtn.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    const form = document.getElementById("cadastro-aviso-form");
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const descricao = document.getElementById("descricao").value;
+      const tipo = document.getElementById("tipo").value;
+      const data = document.getElementById("data").value;
+      const novoAviso = { descricao, tipo, data };
+      try {
+        const response = await fetch("/cadastrar-aviso", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(novoAviso),
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("Aviso cadastrado com sucesso!");
+          form.reset();
+          modal.style.display = "none";
+          await carregarAvisos();
+        } else {
+          alert("Erro: " + result.message);
+        }
+      } catch (error) {
+        alert("Erro ao cadastrar aviso: " + error.message);
+      }
+    });
+  });
+</script>

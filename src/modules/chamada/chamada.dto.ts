@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class CreateChamadaDto {
   @IsNotEmpty()
@@ -6,7 +6,7 @@ export class CreateChamadaDto {
   data: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsBoolean()
   presenca: boolean;
 
   @IsNotEmpty()
@@ -20,7 +20,7 @@ export class UpdateChamadaDto {
   data: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsBoolean()
   presenca: boolean;
 
   @IsNotEmpty()

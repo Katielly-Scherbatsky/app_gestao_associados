@@ -3,8 +3,8 @@ import {
   Catch,
   ExceptionFilter,
   NotFoundException,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 @Catch(NotFoundException)
 export class NotFoundExceptionFilter implements ExceptionFilter {
@@ -13,6 +13,10 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    response.status(404).render('errors/404', { url: request.url });
+    response.status(404).render("errors/404", {
+      url: request.url,
+      title: "Página Não Encontrada",
+      layout: "layouts/auth",
+    });
   }
 }

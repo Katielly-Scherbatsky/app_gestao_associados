@@ -11,6 +11,14 @@ export class CreateAssociadoDto {
 
   @IsOptional()
   @IsString()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  senha?: string;
+
+  @IsOptional()
+  @IsString()
   telefone?: string;
 
   @IsOptional()
@@ -26,12 +34,8 @@ export class CreateAssociadoDto {
   poltrona?: number;
 
   @IsOptional()
-  @IsString()
-  boleto?: string;
-
-  @IsOptional()
-  @IsString()
-  anexos?: string;
+  @IsNumber()
+  tipo?: number;
 }
 
 export class UpdateAssociadoDto {
@@ -58,12 +62,4 @@ export class UpdateAssociadoDto {
   @IsOptional()
   @IsNumber()
   poltrona?: number;
-
-  @IsOptional()
-  @IsString()
-  boleto?: string;
-
-  @IsOptional()
-  @IsString()
-  anexos?: string;
 }

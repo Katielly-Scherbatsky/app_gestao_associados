@@ -1,0 +1,188 @@
+<div class="aviso-section">
+  <div class="aviso-container">
+    <div class="title-section">
+      <div class="aviso-title">Solicitações</div>
+      <div class="subtitle">Confira as solicitações já cadastradas</div>
+      <div class="tab-links" style="margin-top: 20px;">
+        <button id="tab-minhas" class="tab active">Minhas Solicitações</button>
+        <button id="tab-todas" class="tab">Todas as Solicitações</button>
+      </div>
+      <div class="button-container" style="margin-top: 20px;">
+        <button id="open-modal" class="submit-button">Nova Solicitação</button>
+      </div>
+    </div>
+    <div id="content-minhas" class="solicitacoes-tab">
+      <ul class="avisos-list" id="minhas-solicitacoes-list">
+      </ul>
+    </div>
+    <div id="content-todas" class="solicitacoes-tab" style="display: none;">
+      <ul class="avisos-list" id="todas-solicitacoes-list">
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-new-solicitacao" style="display: none;">
+  <div class="modal-content">
+    <span class="close-button" id="close-modal">&times;</span>
+    <div class="title-section">
+      <div class="aviso-title">Nova Solicitação</div>
+      <div class="subtitle">Preencha os dados da solicitação</div>
+    </div>
+    <form id="cadastro-solicitacao-form" class="form-section">
+      <div class="form-container">
+        <div class="input-item">
+          <label for="descricao">Descrição</label>
+          <input id="descricao" class="input-field" type="text" placeholder="Descrição da solicitação" required>
+        </div>
+        <div class="input-item">
+          <label for="tipo">Tipo</label>
+          <input id="tipo" class="input-field" type="text" placeholder="Tipo da solicitação" required>
+        </div>
+        <div class="input-item">
+          <label for="status">Status</label>
+          <select id="status" class="input-field" required>
+            <option value="">Selecione o status</option>
+            <option value="Aberta">Aberta</option>
+            <option value="Em Andamento">Em Andamento</option>
+            <option value="Concluída">Concluída</option>
+          </select>
+        </div>
+      </div>
+      <div class="button-container">
+        <button type="submit" class="submit-button">Cadastrar Solicitação</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    const token = localStorage.getItem("token");
+    const currentUserId = localStorage.getItem("userId");
+    const userType = localStorage.getItem("userType");
+
+    async function fetchSolicitacoes() {
+      try {
+        const response = await fetch("/solicitacoes", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar solicitações");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    async function renderMinhasSolicitacoes() {
+      const solicitacoes = await fetchSolicitacoes();
+      const minhas = solicitacoes.filter(s => String(s.associadoId) === currentUserId);
+      const ul = document.getElementById("minhas-solicitacoes-list");
+      ul.innerHTML = "";
+      minhas.forEach(s => {
+        const li = document.createElement("li");
+        li.className = "aviso-item";
+        li.textContent = `#${s.id} - ${s.descricao} | ${s.tipo} | ${s.status} | Associado: ${s.associado?.nome || s.associadoId}`;
+        ul.appendChild(li);
+      });
+    }
+
+    async function renderTodasSolicitacoes() {
+      const solicitacoes = await fetchSolicitacoes();
+      const ul = document.getElementById("todas-solicitacoes-list");
+      ul.innerHTML = "";
+      solicitacoes.forEach(s => {
+        const li = document.createElement("li");
+        li.className = "aviso-item";
+        li.textContent = `#${s.id} - ${s.descricao} | ${s.tipo} | ${s.status} | Associado: ${s.associado?.nome || s.associadoId}`;
+        ul.appendChild(li);
+      });
+    }
+
+    async function renderSolicitacoes() {
+      if (userType === "1") {
+        document.getElementById("tab-todas").style.display = "none";
+        document.getElementById("content-todas").style.display = "none";
+        await renderMinhasSolicitacoes();
+      } else if (userType === "2") {
+        document.getElementById("tab-todas").style.display = "block";
+        document.getElementById("content-minhas").style.display = "block";
+        await renderMinhasSolicitacoes();
+        await renderTodasSolicitacoes();
+      } else {
+        document.getElementById("tab-todas").style.display = "none";
+        document.getElementById("content-todas").style.display = "none";
+        await renderMinhasSolicitacoes();
+      }
+    }
+
+    renderSolicitacoes();
+
+    if (userType === "2") {
+      document.getElementById("tab-minhas").addEventListener("click", function () {
+        this.classList.add("active");
+        document.getElementById("tab-todas").classList.remove("active");
+        document.getElementById("content-minhas").style.display = "block";
+        document.getElementById("content-todas").style.display = "none";
+      });
+      document.getElementById("tab-todas").addEventListener("click", function () {
+        this.classList.add("active");
+        document.getElementById("tab-minhas").classList.remove("active");
+        document.getElementById("content-minhas").style.display = "none";
+        document.getElementById("content-todas").style.display = "block";
+      });
+    }
+
+    const modal = document.getElementById("modal-new-solicitacao");
+    document.getElementById("open-modal").addEventListener("click", function () {
+      modal.style.display = "flex";
+    });
+    document.getElementById("close-modal").addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    document.getElementById("cadastro-solicitacao-form").addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const descricao = document.getElementById("descricao").value;
+      const tipoInput = document.getElementById("tipo").value;
+      const status = document.getElementById("status").value;
+      const novaSolicitacao = {
+        descricao,
+        tipo: tipoInput,
+        status,
+        associadoId: Number(currentUserId)
+      };
+      try {
+        const response = await fetch("/solicitacoes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(novaSolicitacao)
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("Solicitação cadastrada com sucesso!");
+          this.reset();
+          modal.style.display = "none";
+          await renderSolicitacoes();
+        } else {
+          alert("Erro: " + result.message);
+        }
+      } catch (error) {
+        alert("Erro ao cadastrar solicitação: " + error.message);
+      }
+    });
+  });
+</script>

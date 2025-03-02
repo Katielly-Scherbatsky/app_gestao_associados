@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Associado } from "./associado.entity";
@@ -12,19 +12,19 @@ export class Aviso {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 200 })
   descricao: string;
 
   @Column({ length: 50 })
   tipo: string;
 
-  @Column({ type: "timestamp" })
+  @Column({ type: "date" })
   data: string;
 
   @Column({ name: "associado_id" })
   associadoId: number;
 
-  @OneToOne(() => Associado)
-  @JoinColumn({ name: "id" })
+  @ManyToOne(() => Associado, (associado) => associado.avisos)
+  @JoinColumn({ name: "associado_id" })
   associado: Associado;
 }

@@ -1,16 +1,23 @@
+CREATE DATABASE gestao_associados_db;
+
+USE gestao_associados_db;
+
 CREATE TABLE associado (
   id INT PRIMARY KEY AUTO_INCREMENT,
   nome VARCHAR(100),
   cpf VARCHAR(14),
+  email VARCHAR(100) NOT NULL,
+  senha VARCHAR(255) NOT NULL,
   telefone VARCHAR(15),
   faculdade_id INT,
   curso VARCHAR(100),
   poltrona INT,
   boleto VARCHAR(255),
   anexos VARCHAR(255),
-  tipo INT, (associado ou admin)
+  tipo INT,
   FOREIGN KEY (faculdade_id) REFERENCES faculdade(id)
 );
+
 
 CREATE TABLE faculdade (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -38,7 +45,7 @@ CREATE TABLE solicitacao (
   data DATE,
   status VARCHAR(20),
   associado_id INT,
-  FOREIGN KEY (associado_id) REFERENCES associado(id),
+  FOREIGN KEY (associado_id) REFERENCES associado(id)
 );
 
 CREATE TABLE chamada (

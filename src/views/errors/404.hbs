@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,17 +62,24 @@
     }
 
     @keyframes shake {
-      0% { transform: translateX(-5px); }
-      100% { transform: translateX(5px); }
+      0% {
+        transform: translateX(-5px);
+      }
+
+      100% {
+        transform: translateX(5px);
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>404</h1>
     <h2>Oops! Página Não Encontrada</h2>
     <p>A URL <strong>{{url}}</strong> não pôde ser encontrada no servidor.</p>
-    <a href="/" class="back-link">Voltar para a Página Inicial</a>
+    <a href="/auth/login" class="back-link">Voltar para a Página Inicial</a>
   </div>
 </body>
+
 </html>

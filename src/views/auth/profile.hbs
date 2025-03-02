@@ -1,25 +1,119 @@
-{{#> main}}
-{{#*inline "content"}}
-<div class="profile-container" style="max-width:600px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <h1>Perfil de {{associado.nome}}</h1>
-  <ul style="list-style: none; padding: 0; line-height: 1.8;">
-    <li><strong>CPF:</strong> {{associado.cpf}}</li>
-    <li><strong>Telefone:</strong> {{associado.telefone}}</li>
-    <li><strong>Faculdade:</strong> {{associado.faculdade_id}}</li>
-    <li><strong>Curso:</strong> {{associado.curso}}</li>
-    <li><strong>Poltrona:</strong> {{associado.poltrona}}</li>
-    <li><strong>Boleto:</strong> {{associado.boleto}}</li>
-    <li><strong>Anexos:</strong> {{associado.anexos}}</li>
-    <li>
-      <strong>Tipo:</strong>
-      {{#if associado.tipo}}
-      Admin
-      {{else}}
-      Associado
-      {{/if}}
-    </li>
-  </ul>
-  <p style="margin-top: 1.5rem;"><a href="/logout" style="color: #20332C; text-decoration: none;">Deslogar</a></p>
+<div class="aviso-section">
+  <div class="chamada-container">
+    <div class="title-section">
+      <div class="chamada-title">Perfil</div>
+      <div class="subtitle">Seus dados</div>
+    </div>
+    <form id="cadastro-form" class="form-section">
+      <div class="form-container">
+        <div class="input-group">
+          <label for="nome" class="visually-hidden">Nome</label>
+          <input id="nome" class="input-field" type="text" placeholder="Nome" required disabled>
+        </div>
+        <div class="input-item">
+          <label for="cpf" class="visually-hidden">CPF</label>
+          <input id="cpf" class="input-field" type="text" placeholder="CPF" required disabled>
+        </div>
+        <div class="input-item">
+          <label for="telefone" class="visually-hidden">Telefone</label>
+          <input id="telefone" class="input-field" type="text" placeholder="Telefone" required disabled>
+        </div>
+        <div class="input-item">
+          <label for="faculdade_id" class="visually-hidden">Faculdade</label>
+          <input id="faculdade_id" class="input-field" type="text" placeholder="Faculdade" required disabled>
+        </div>
+        <div class="input-item">
+          <label for="curso" class="visually-hidden">Curso</label>
+          <input id="curso" class="input-field" type="text" placeholder="Curso" required disabled>
+        </div>
+        <div class="input-item">
+          <label for="poltrona" class="visually-hidden">Poltrona</label>
+          <input id="poltrona" class="input-field" type="number" placeholder="Poltrona" required disabled>
+        </div>
+      </div>
+      <div class="button-container">
+        <button type="button" id="editar-btn" class="submit-button">Editar</button>
+      </div>
+    </form>
+  </div>
 </div>
-{{/inline}}
-{{/main}}
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    async function fetchAssociadoData(userId) {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(`/associado/${userId}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar dados do associado");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Erro ao carregar dados do associado:", error);
+        return null;
+      }
+    }
+
+    async function preencherFormulario() {
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        const associado = await fetchAssociadoData(userId);
+        if (associado) {
+          document.getElementById("nome").value = associado.nome || "";
+          document.getElementById("cpf").value = associado.cpf || "";
+          document.getElementById("telefone").value = associado.telefone || "";
+          document.getElementById("faculdade_id").value = associado.faculdade ? associado.faculdade.nome : associado.faculdadeId;
+          document.getElementById("curso").value = associado.curso || "";
+          document.getElementById("poltrona").value = associado.poltrona || "";
+        }
+      }
+    }
+
+    preencherFormulario();
+
+    const editarBtn = document.getElementById("editar-btn");
+    const cadastroForm = document.getElementById("cadastro-form");
+
+    editarBtn.addEventListener("click", async function () {
+      if (this.textContent === "Editar") {
+        const inputs = document.querySelectorAll("#cadastro-form .input-field");
+        inputs.forEach(input => input.disabled = false);
+        this.textContent = "Salvar";
+      } else {
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+        const data = {
+          nome: document.getElementById("nome").value,
+          cpf: document.getElementById("cpf").value,
+          telefone: document.getElementById("telefone").value,
+          faculdadeId: Number(document.getElementById("faculdade_id").value),
+          curso: document.getElementById("curso").value,
+          poltrona: Number(document.getElementById("poltrona").value),
+        };
+        try {
+          const response = await fetch(`/associado/${userId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(data),
+          });
+          if (!response.ok) {
+            throw new Error("Erro ao atualizar os dados");
+          }
+          alert("Dados atualizados com sucesso!");
+          const inputs = document.querySelectorAll("#cadastro-form .input-field");
+          inputs.forEach(input => input.disabled = true);
+          this.textContent = "Editar";
+        } catch (error) {
+          alert("Erro: " + error.message);
+        }
+      }
+    });
+  });
+</script>

@@ -1,331 +1,124 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chamada de Associados com Menu Lateral</title>
-  <style>
-    :root {
-      --primary-color: #20332C;
-      --secondary-color: #1A7352;
-      --light-color: #fff;
-      --text-color: #333;
-      --background-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: var(--background-gradient);
-      display: flex;
-    }
-
-    /* Sidebar - Menu Lateral */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 250px;
-      height: 100%;
-      background-color: var(--primary-color);
-      color: var(--light-color);
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .sidebar h2 {
-      margin-top: 0;
-      font-size: 22px;
-    }
-
-    .sidebar a {
-      display: block;
-      color: var(--light-color);
-      text-decoration: none;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 4px;
-      transition: background 0.3s ease;
-    }
-
-    .sidebar a:hover {
-      background-color: var(--secondary-color);
-    }
-
-    /* Main Content */
-    .main-content {
-      margin-left: 250px;
-      /* Espaço para o menu lateral */
-      width: calc(100% - 250px);
-      padding: 65px 80px;
-      box-sizing: border-box;
-      min-height: 100vh;
-    }
-
-    @media (max-width: 991px) {
-      .main-content {
-        padding: 20px;
-      }
-    }
-
-    /* Chamada de Associados */
-    .chamada-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .chamada-container {
-      background-color: var(--light-color);
-      width: 100%;
-      max-width: 600px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 40px 60px;
-      transition: transform 0.3s ease;
-    }
-
-    .chamada-container:hover {
-      transform: translateY(-5px);
-    }
-
-    @media (max-width: 991px) {
-      .chamada-container {
-        padding: 20px;
-      }
-    }
-
-    .title-section {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .chamada-title {
-      font-size: 28px;
-      font-weight: bold;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: var(--text-color);
-      margin: 0;
-    }
-
-    .associados-list {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    .associado-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 10px;
-      border-bottom: 1px solid #e0e0e0;
-      transition: background 0.3s ease;
-    }
-
-    .associado-item:hover {
-      background-color: #f9f9f9;
-    }
-
-    .associado-nome {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text-color);
-    }
-
-    .toggle-presenca {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-    }
-
-    .toggle-presenca input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 34px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-
-    input:checked+.slider {
-      background-color: var(--primary-color);
-    }
-
-    input:checked+.slider:before {
-      transform: translateX(26px);
-    }
-
-    .button-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 30px;
-    }
-
-    .submit-button {
-      width: 100%;
-      padding: 12px 0;
-      border: none;
-      border-radius: 6px;
-      background-color: var(--primary-color);
-      color: var(--light-color);
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .submit-button:hover {
-      background-color: var(--secondary-color);
-    }
-  </style>
-</head>
-
-<body>
-  <!-- Menu lateral fixo -->
-  <div class="sidebar">
-    <h2>Menu</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Associados</a>
-    <a href="#">Chamada</a>
-    <a href="#">Relatórios</a>
-    <a href="#">Sair</a>
-  </div>
-  <!-- Conteúdo principal -->
-  <div class="main-content">
-    <div class="chamada-section">
-      <div class="chamada-container">
-        <div class="title-section">
-          <div class="chamada-title">Chamada de Associados</div>
-          <div class="subtitle">Marque a presença dos associados</div>
-        </div>
-        <div class="associados-list" id="associados-list">
-          <!-- Lista de associados será carregada aqui -->
-        </div>
-        <div class="button-container">
-          <button id="salvar-chamada" class="submit-button">Salvar Chamada</button>
-        </div>
+<div class="chamada-section">
+  <div class="chamada-container">
+    <div class="title-section">
+      <div class="chamada-title">Chamadas Anteriores</div>
+      <div class="subtitle">Confira as chamadas já realizadas</div>
+      <div class="button-container">
+        <button id="open-modal" class="submit-button">Nova Chamada</button>
       </div>
     </div>
+    <ul class="chamadas-list" id="chamadas-list">
+    </ul>
   </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-      // Função para carregar a lista de associados (dados de teste)
-      async function carregarAssociados() {
-        const associados = [
-          {
-            id: 1,
-            nome: "João Silva",
-            cpf: "123.456.789-00",
-            telefone: "(11) 99999-9999",
-            faculdade_id: 1,
-            curso: "Engenharia de Software",
-            poltrona: 5,
-            boleto: "pago",
-            anexos: "documento1.pdf"
-          },
-          {
-            id: 2,
-            nome: "Maria Oliveira",
-            cpf: "987.654.321-00",
-            telefone: "(11) 88888-8888",
-            faculdade_id: 2,
-            curso: "Medicina",
-            poltrona: 12,
-            boleto: "pendente",
-            anexos: "documento2.pdf"
-          },
-          {
-            id: 3,
-            nome: "Carlos Souza",
-            cpf: "456.789.123-00",
-            telefone: "(11) 77777-7777",
-            faculdade_id: 3,
-            curso: "Direito",
-            poltrona: 8,
-            boleto: "pago",
-            anexos: "documento3.pdf"
-          }
-        ];
-        const lista = document.getElementById("associados-list");
-        associados.forEach(associado => {
-          const associadoItem = document.createElement("div");
-          associadoItem.className = "associado-item";
-          const nome = document.createElement("div");
-          nome.className = "associado-nome";
-          nome.textContent = associado.nome;
-          const toggle = document.createElement("label");
-          toggle.className = "toggle-presenca";
-          const input = document.createElement("input");
-          input.type = "checkbox";
-          input.dataset.associadoId = associado.id;
-          const slider = document.createElement("span");
-          slider.className = "slider";
-          toggle.appendChild(input);
-          toggle.appendChild(slider);
-          associadoItem.appendChild(nome);
-          associadoItem.appendChild(toggle);
-          lista.appendChild(associadoItem);
-        });
-      }
-      // Carregar os dados de associados
-      await carregarAssociados();
-      // Salvar a chamada
-      document.getElementById("salvar-chamada").addEventListener("click", async function () {
-        const checkboxes = document.querySelectorAll("#associados-list input[type='checkbox']");
-        const presencas = [];
-        checkboxes.forEach(checkbox => {
-          presencas.push({
-            associado_id: checkbox.dataset.associadoId,
-            presenca: checkbox.checked,
-          });
-        });
-        const response = await fetch("/salvar-chamada", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ presencas }),
-        });
-        const result = await response.json();
-        if (response.ok) {
-          alert("Chamada salva com sucesso!");
-        } else {
-          alert("Erro: " + result.message);
-        }
-      });
-    });
-  </script>
-</body>
+</div>
 
-</html>
+<div class="modal" id="modal-new-call" style="display: none;">
+  <div class="modal-content">
+    <span class="close-button" id="close-modal">&times;</span>
+    <div class="title-section">
+      <div class="chamada-title">Nova Chamada</div>
+      <div class="subtitle">Marque a presença dos associados</div>
+    </div>
+    <div class="associados-list" id="associados-list">
+    </div>
+    <div class="button-container">
+      <button id="salvar-chamada" class="submit-button">Salvar Chamada</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    async function carregarAssociados() {
+      const associados = [
+        { id: 1, nome: "João Silva" },
+        { id: 2, nome: "Maria Oliveira" },
+        { id: 3, nome: "Carlos Souza" }
+      ];
+      const lista = document.getElementById("associados-list");
+      lista.innerHTML = "";
+      associados.forEach(associado => {
+        const associadoItem = document.createElement("div");
+        associadoItem.className = "associado-item";
+        const nome = document.createElement("div");
+        nome.className = "associado-nome";
+        nome.textContent = associado.nome;
+        const toggle = document.createElement("label");
+        toggle.className = "toggle-presenca";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.dataset.associadoId = associado.id;
+        const slider = document.createElement("span");
+        slider.className = "slider";
+        toggle.appendChild(input);
+        toggle.appendChild(slider);
+        associadoItem.appendChild(nome);
+        associadoItem.appendChild(toggle);
+        lista.appendChild(associadoItem);
+      });
+    }
+
+    async function carregarChamadas() {
+      const chamadas = [
+        { id: 1, data: "2025-02-25", total: 20, presentes: 18 },
+        { id: 2, data: "2025-02-20", total: 20, presentes: 20 },
+        { id: 3, data: "2025-02-15", total: 20, presentes: 17 }
+      ];
+      const listaChamadas = document.getElementById("chamadas-list");
+      listaChamadas.innerHTML = "";
+      chamadas.forEach(chamada => {
+        const item = document.createElement("li");
+        item.className = "chamada-item";
+        item.textContent = `Chamada em ${chamada.data}: ${chamada.presentes} de ${chamada.total} presentes`;
+        listaChamadas.appendChild(item);
+      });
+    }
+
+    await carregarChamadas();
+
+    const modal = document.getElementById("modal-new-call");
+    const openModalBtn = document.getElementById("open-modal");
+    const closeModalBtn = document.getElementById("close-modal");
+
+    openModalBtn.addEventListener("click", async function () {
+      // Exibe o modal e carrega os associados
+      modal.style.display = "flex";
+      await carregarAssociados();
+    });
+
+    closeModalBtn.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    document.getElementById("salvar-chamada").addEventListener("click", async function () {
+      const checkboxes = document.querySelectorAll("#associados-list input[type='checkbox']");
+      const presencas = [];
+      checkboxes.forEach(checkbox => {
+        presencas.push({
+          associado_id: checkbox.dataset.associadoId,
+          presenca: checkbox.checked,
+        });
+      });
+      const dataHoje = new Date().toISOString().split('T')[0];
+      const response = await fetch("/chamadas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ presencas, data: dataHoje }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert("Chamada salva com sucesso!");
+        await carregarChamadas();
+        modal.style.display = "none";
+      } else {
+        alert("Erro: " + result.message);
+      }
+    });
+  });
+</script>

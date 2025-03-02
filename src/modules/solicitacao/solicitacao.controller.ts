@@ -7,10 +7,13 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 import { CreateSolicitacaoDto, UpdateSolicitacaoDto } from "./solicitacao.dto";
 import { SolicitacaoService } from "./solicitacao.service";
 
+@UseGuards(AuthGuard("jwt"))
 @Controller("solicitacoes")
 export class SolicitacaoController {
   constructor(private readonly solicitacaoService: SolicitacaoService) {}

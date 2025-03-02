@@ -1,4 +1,3 @@
-// src/common/filters/auth-exceptions.filter.ts
 import {
   ArgumentsHost,
   Catch,
@@ -6,8 +5,8 @@ import {
   ForbiddenException,
   HttpException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 interface IRequestFlash extends Request {
   flash: any;
@@ -25,12 +24,12 @@ export class AuthExceptionFilter implements ExceptionFilter {
       exception instanceof ForbiddenException
     ) {
       request.flash(
-        'loginError',
-        'Usuário e/ou senha incorretos! Tente novamente.',
+        "loginError",
+        "Usuário e/ou senha incorretos! Tente novamente."
       );
-      response.redirect('/');
+      response.redirect("/");
     } else {
-      response.redirect('/error');
+      response.redirect("/error");
     }
   }
 }

@@ -21,9 +21,7 @@ export class ChamadaService {
   }
 
   async findOne(id: number): Promise<Chamada> {
-    const chamada = await this.chamadaRepository.findOne({
-      where: { id: id },
-    });
+    const chamada = await this.chamadaRepository.findOne({ where: { id } });
     if (!chamada) {
       throw new NotFoundException(`Chamada com ID ${id} não encontrada`);
     }

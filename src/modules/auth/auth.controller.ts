@@ -1,68 +1,99 @@
 import {
+  Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
+  Logger,
   Post,
   Render,
-  Request,
   Res,
   UseFilters,
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 import { AuthExceptionFilter } from "src/common/filters/auth-exceptions.filter";
-import { AuthenticatedGuard } from "src/common/guards/authenticated.guard";
-import { LoginGuard } from "src/common/guards/login.guard";
+import { CreateAssociadoDto } from "../associado/associado.dto";
+import { AuthService } from "./auth.service";
+import { JwtAuthGuard } from "./jwt-auth.guard";
 
 @Controller("auth")
 @UseFilters(AuthExceptionFilter)
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+  constructor(private readonly authService: AuthService) {}
+
   @Get("/login")
   @Render("auth/login")
-  index(@Request() req): { message: string } {
-    return { message: req.flash("loginError") };
+  loginPage() {
+    return { title: "Login / Registro", layout: "layouts/auth" };
   }
 
-  @UseGuards(LoginGuard)
-  @Post("/login")
-  login(@Res() res: Response) {
-    res.redirect("/home");
+  @Post("register")
+  async register(@Body() registerDto: CreateAssociadoDto) {
+    try {
+      const user = await this.authService.register(registerDto);
+      return { message: "Usuário cadastrado com sucesso!", user };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  // @UseGuards(AuthenticatedGuard)
+  @Post("login")
+  async login(
+    @Body() loginDto: { email: string; senha: string },
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.senha
+    );
+    if (!user) {
+      throw new HttpException(
+        "Email ou senha inválidos",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+    const tokenResponse = await this.authService.login(user);
+    res.cookie("access_token", tokenResponse.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    return tokenResponse;
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get("/home")
-  @Render("home")
-  getHome(@Request() req) {
-    return { user: req.user };
+  @Render("auth/home")
+  home() {
+    return { title: "Home" };
   }
 
-  // @UseGuards(AuthenticatedGuard)
+  @UseGuards(JwtAuthGuard)
   @Get("/profile")
   @Render("auth/profile")
-  getProfile(@Request() req) {
-    return { user: req.user };
+  profile() {
+    return { title: "Perfil" };
   }
 
-  @Get("/associado")
-  @Render("auth/associado")
-  getAssociado(@Request() req) {
-    return { user: req.user };
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get("/chamada")
   @Render("auth/chamada")
-  getChamada(@Request() req) {
-    return { user: req.user };
+  chamada() {
+    return { title: "Chamada" };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get("/aviso")
   @Render("auth/aviso")
-  getAviso(@Request() req) {
-    return { user: req.user };
+  aviso() {
+    return { title: "Avisos" };
   }
 
-  @Get("/logout")
-  logout(@Request() req, @Res() res: Response) {
-    req.session.destroy();
-    res.redirect("/");
+  @UseGuards(JwtAuthGuard)
+  @Get("solicitacao")
+  @Render("auth/solicitacao")
+  solicitacao() {
+    return { title: "Solicitações" };
   }
 }
