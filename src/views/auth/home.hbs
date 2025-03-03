@@ -8,10 +8,61 @@
   </p>
   <div class="avisos-section">
     <h3>Últimos Avisos</h3>
-    <ul class="avisos-list">
-      <li class="aviso-item">Aviso 1: Atualização do sistema agendada para amanhã.</li>
-      <li class="aviso-item">Aviso 2: Nova funcionalidade adicionada no módulo de chamados.</li>
-      <li class="aviso-item">Aviso 3: Manutenção preventiva realizada com sucesso.</li>
+    <ul class="avisos-list" id="ultimos-avisos-list">
+      <!-- Os três últimos avisos serão inseridos aqui -->
     </ul>
   </div>
 </div>
+
+<script>
+  function formatDate(dateString) {
+    const date = new Date(dateString + 'T00:00:00');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const token = localStorage.getItem("token");
+
+    async function fetchAvisos() {
+      try {
+        const response = await fetch("/avisos", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar avisos");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    async function renderUltimosAvisos() {
+      const avisos = await fetchAvisos();
+      const ul = document.getElementById("ultimos-avisos-list");
+      ul.innerHTML = "";
+      if (avisos.length === 0) {
+        const li = document.createElement("li");
+        li.className = "aviso-item";
+        li.textContent = "Sem registros";
+        ul.appendChild(li);
+      } else {
+        const ultimosAvisos = avisos.sort((a, b) => new Date(b.data) - new Date(a.data)).slice(0, 3);
+        ultimosAvisos.forEach(a => {
+          const li = document.createElement("li");
+          li.className = "aviso-item";
+          li.textContent = `${formatDate(a.data)} - [${a.tipo}] ${a.descricao}`;
+          ul.appendChild(li);
+        });
+      }
+    }
+
+    renderUltimosAvisos();
+  });
+</script>

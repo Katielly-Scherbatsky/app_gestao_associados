@@ -3,20 +3,34 @@
     <div class="title-section">
       <div class="aviso-title">Avisos</div>
       <div class="subtitle">Confira os avisos já cadastrados</div>
-      <div class="button-container">
+      <div class="button-container" id="novo-aviso-container" style="margin-top: 20px;">
+        {{!-- Exibe o botão "Novo Aviso" somente para admin (usuário do tipo 2) --}}
         <button id="open-modal" class="submit-button">Novo Aviso</button>
       </div>
     </div>
-    <ul class="avisos-list" id="avisos-list">
-    </ul>
+    <table id="avisos-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Data</th>
+          <th>Tipo</th>
+          <th>Descrição</th>
+          <th id="acoes-header" style="width: 90px; text-align: center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="avisos-list">
+        {{!-- Linhas geradas dinamicamente --}}
+      </tbody>
+    </table>
   </div>
 </div>
 
-<div class="modal" id="modal-new-aviso">
+{{!-- Modal para Novo/Editar Aviso (somente para admin) --}}
+<div class="modal" id="modal-new-aviso" style="display: none;">
   <div class="modal-content">
     <span class="close-button" id="close-modal">&times;</span>
     <div class="title-section">
-      <div class="aviso-title">Novo Aviso</div>
+      <div class="aviso-title" id="modal-title">Novo Aviso</div>
       <div class="subtitle">Preencha os dados do aviso</div>
     </div>
     <form id="cadastro-aviso-form" class="form-section">
@@ -40,73 +54,207 @@
         </div>
       </div>
       <div class="button-container">
-        <button type="submit" class="submit-button">Cadastrar Aviso</button>
+        <button type="submit" class="submit-button" id="salvar-aviso-btn">Cadastrar Aviso</button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
+  function formatDate(dateString) {
+    const date = new Date(dateString + 'T00:00:00');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  let editAvisoId = null;
+
   document.addEventListener("DOMContentLoaded", async function () {
-    async function carregarAvisos() {
-      const avisos = [
-        { id: 1, descricao: "Manutenção programada para amanhã", tipo: "Informativo", data: "2025-02-26" },
-        { id: 2, descricao: "Nova atualização disponível", tipo: "Urgente", data: "2025-02-24" },
-        { id: 3, descricao: "Lembrete: Reunião semanal", tipo: "Lembrete", data: "2025-02-20" }
-      ];
-      const listaAvisos = document.getElementById("avisos-list");
-      listaAvisos.innerHTML = "";
-      avisos.forEach(aviso => {
-        const item = document.createElement("li");
-        item.className = "aviso-item";
-        item.textContent = `${aviso.data} - [${aviso.tipo}] ${aviso.descricao}`;
-        listaAvisos.appendChild(item);
-      });
+    const token = localStorage.getItem("token");
+    const currentUserId = localStorage.getItem("userId");
+    const userType = localStorage.getItem("userType");
+    if (userType !== "2") {
+      document.getElementById("novo-aviso-container").style.display = "none";
+      document.getElementById("acoes-header").style.display = "none";
     }
 
-    await carregarAvisos();
-
-    const modal = document.getElementById("modal-new-aviso");
-    const openModalBtn = document.getElementById("open-modal");
-    const closeModalBtn = document.getElementById("close-modal");
-
-    openModalBtn.addEventListener("click", function () {
-      modal.style.display = "flex";
-    });
-    closeModalBtn.addEventListener("click", function () {
-      modal.style.display = "none";
-    });
-    window.addEventListener("click", function (event) {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    });
-
-    const form = document.getElementById("cadastro-aviso-form");
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      const descricao = document.getElementById("descricao").value;
-      const tipo = document.getElementById("tipo").value;
-      const data = document.getElementById("data").value;
-      const novoAviso = { descricao, tipo, data };
+    async function fetchAvisos() {
       try {
-        const response = await fetch("/cadastrar-aviso", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(novoAviso),
+        const response = await fetch("/avisos", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
         });
-        const result = await response.json();
-        if (response.ok) {
-          alert("Aviso cadastrado com sucesso!");
-          form.reset();
-          modal.style.display = "none";
-          await carregarAvisos();
-        } else {
-          alert("Erro: " + result.message);
+        if (!response.ok) {
+          throw new Error("Erro ao buscar avisos");
         }
+        return await response.json();
       } catch (error) {
-        alert("Erro ao cadastrar aviso: " + error.message);
+        console.error(error);
+        return [];
       }
-    });
+    }
+
+    async function renderAvisos() {
+      const avisos = await fetchAvisos();
+      const tbody = document.getElementById("avisos-list");
+      tbody.innerHTML = "";
+      if (avisos.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.setAttribute("colspan", userType === "2" ? "5" : "4");
+        td.className = "no-records";
+        td.textContent = "Sem registros";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        avisos.forEach(a => {
+          const tr = document.createElement("tr");
+
+          const tdId = document.createElement("td");
+          tdId.textContent = a.id;
+          tr.appendChild(tdId);
+
+          const tdData = document.createElement("td");
+          tdData.textContent = formatDate(a.data);
+          tr.appendChild(tdData);
+
+          const tdTipo = document.createElement("td");
+          tdTipo.textContent = a.tipo;
+          tr.appendChild(tdTipo);
+
+          const tdDescricao = document.createElement("td");
+          tdDescricao.textContent = a.descricao;
+          tr.appendChild(tdDescricao);
+
+          const tdAcoes = document.createElement("td");
+          if (userType === "2" && String(a.associadoId) === currentUserId) {
+            const btnEdit = document.createElement("button");
+            btnEdit.className = "action-btn edit";
+            btnEdit.innerHTML = '<i class="icon-edit"></i>';
+            btnEdit.addEventListener("click", async function () {
+              editAvisoId = a.id;
+              document.getElementById("modal-title").textContent = "Editar Aviso";
+              document.getElementById("salvar-aviso-btn").textContent = "Salvar Alterações";
+              try {
+                const response = await fetch(`/avisos/${a.id}`, {
+                  headers: {
+                    "Authorization": `Bearer ${token}`
+                  }
+                });
+                if (!response.ok) {
+                  throw new Error("Erro ao buscar dados do aviso");
+                }
+                const avisoData = await response.json();
+                document.getElementById("descricao").value = avisoData.descricao || "";
+                document.getElementById("tipo").value = avisoData.tipo || "";
+                const inputData = document.getElementById("data");
+                const dateObj = new Date(avisoData.data + 'T00:00:00');
+                const yyyy = dateObj.getFullYear();
+                const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const dd = String(dateObj.getDate()).padStart(2, '0');
+                inputData.value = `${yyyy}-${mm}-${dd}`;
+                document.getElementById("modal-new-aviso").style.display = "flex";
+              } catch (error) {
+                alert("Erro ao carregar dados do aviso: " + error.message);
+              }
+            });
+            tdAcoes.appendChild(btnEdit);
+
+            const btnDelete = document.createElement("button");
+            btnDelete.className = "action-btn delete";
+            btnDelete.innerHTML = '<i class="icon-trash"></i>';
+            btnDelete.addEventListener("click", async function () {
+              if (confirm("Deseja excluir este aviso?")) {
+                try {
+                  const response = await fetch(`/avisos/${a.id}`, {
+                    method: "DELETE",
+                    headers: {
+                      "Authorization": `Bearer ${token}`
+                    }
+                  });
+                  if (response.ok) {
+                    alert("Aviso excluído com sucesso!");
+                    await renderAvisos();
+                  } else {
+                    alert("Erro ao excluir aviso");
+                  }
+                } catch (error) {
+                  alert("Erro: " + error.message);
+                }
+              }
+            });
+            tdAcoes.appendChild(btnDelete);
+          }
+          tr.appendChild(tdAcoes);
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    renderAvisos();
+
+    if (userType === "2") {
+      const modal = document.getElementById("modal-new-aviso");
+      document.getElementById("open-modal").addEventListener("click", function () {
+        editAvisoId = null;
+        document.getElementById("modal-title").textContent = "Novo Aviso";
+        document.getElementById("salvar-aviso-btn").textContent = "Cadastrar Aviso";
+        document.getElementById("cadastro-aviso-form").reset();
+        modal.style.display = "flex";
+      });
+      document.getElementById("close-modal").addEventListener("click", function () {
+        modal.style.display = "none";
+      });
+      window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+      document.getElementById("cadastro-aviso-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const descricao = document.getElementById("descricao").value;
+        const tipo = document.getElementById("tipo").value;
+        const data = document.getElementById("data").value;
+        const associadoId = Number(localStorage.getItem("userId"));
+        const avisoPayload = { descricao, tipo, data, associadoId };
+        try {
+          let response;
+          if (editAvisoId) {
+            response = await fetch(`/avisos/${editAvisoId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify(avisoPayload)
+            });
+          } else {
+            response = await fetch("/avisos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify(avisoPayload)
+            });
+          }
+          const result = await response.json();
+          if (response.ok) {
+            alert(editAvisoId ? "Aviso atualizado com sucesso!" : "Aviso cadastrado com sucesso!");
+            this.reset();
+            modal.style.display = "none";
+            editAvisoId = null;
+            await renderAvisos();
+          } else {
+            alert("Erro: " + result.message);
+          }
+        } catch (error) {
+          alert("Erro ao salvar aviso: " + error.message);
+        }
+      });
+    }
   });
 </script>

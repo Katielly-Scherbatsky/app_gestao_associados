@@ -36,6 +36,16 @@
       margin-right: 5px;
     }
 
+    .icon-edit::before {
+      content: "✏️";
+      margin-right: 5px;
+    }
+
+    .icon-trash::before {
+      content: "🗑️";
+      margin-right: 5px;
+    }
+
     :root {
       --primary-color: #20332C;
       --secondary-color: #1A7352;
@@ -107,8 +117,7 @@
 
     .chamada-container {
       background-color: var(--light-color);
-      width: 100%;
-      max-width: 600px;
+      width: 800px;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       padding: 40px 60px;
@@ -210,8 +219,10 @@
 
     .button-container {
       display: flex;
-      justify-content: center;
+      width: 200px;
+      justify-content: flex-end;
       margin-top: 30px;
+      margin-left: auto;
     }
 
     .submit-button {
@@ -240,7 +251,7 @@
 
     .aviso-container {
       background-color: var(--light-color);
-      width: 432px;
+      width: 800px;
       max-width: 100%;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -269,6 +280,18 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
+    }
+
+    .form-container-perfil {
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .input-group,
@@ -301,7 +324,7 @@
 
     .login-container {
       background-color: var(--light-color);
-      width: 432px;
+      width: 800px;
       max-width: 100%;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -357,6 +380,97 @@
       font-weight: bold;
       color: var(--primary-color);
       cursor: pointer;
+    }
+
+    .tab-links {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background-color: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #20332C;
+      transition: background-color 0.3s ease;
+    }
+
+    .tab.active {
+      background-color: var(--primary-color);
+      color: var(--light-color);
+    }
+
+    .tab:hover:not(.active) {
+      background-color: #d0d0d0;
+    }
+
+    .tab-links {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background-color: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #20332C;
+      transition: background-color 0.3s ease;
+    }
+
+    .tab.active {
+      background-color: var(--primary-color);
+      color: var(--light-color);
+    }
+
+    .tab:hover:not(.active) {
+      background-color: #d0d0d0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--primary-color);
+      color: var(--light-color);
+    }
+
+    .action-btn {
+      margin-right: 5px;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    .action-btn.edit {
+      color: #ffc107;
+    }
+
+    .action-btn.delete {
+      color: #dc3545;
+    }
+
+    .no-records {
+      text-align: center;
+      font-style: italic;
+      color: #777;
     }
 
     @media (max-width: 991px) {

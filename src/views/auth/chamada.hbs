@@ -4,22 +4,36 @@
       <div class="chamada-title">Chamadas Anteriores</div>
       <div class="subtitle">Confira as chamadas já realizadas</div>
       <div class="button-container">
-        <button id="open-modal" class="submit-button">Nova Chamada</button>
+        <!-- Botão "Nova Chamada": exibido somente para usuários do tipo 2 -->
+        <button id="open-modal-chamada" class="submit-button">Nova Chamada</button>
       </div>
     </div>
-    <ul class="chamadas-list" id="chamadas-list">
-    </ul>
+    <table id="chamadas-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Data</th>
+          <th>Presença</th>
+          <th>Associado</th>
+        </tr>
+      </thead>
+      <tbody id="chamadas-list">
+        {{!-- Linhas geradas dinamicamente --}}
+      </tbody>
+    </table>
   </div>
 </div>
 
+<!-- Modal para Nova Chamada -->
 <div class="modal" id="modal-new-call" style="display: none;">
   <div class="modal-content">
-    <span class="close-button" id="close-modal">&times;</span>
+    <span class="close-button" id="close-modal-chamada">&times;</span>
     <div class="title-section">
       <div class="chamada-title">Nova Chamada</div>
       <div class="subtitle">Marque a presença dos associados</div>
     </div>
     <div class="associados-list" id="associados-list">
+      {{!-- Lista de associados será carregada via API --}}
     </div>
     <div class="button-container">
       <button id="salvar-chamada" class="submit-button">Salvar Chamada</button>
@@ -28,97 +42,165 @@
 </div>
 
 <script>
+  function formatDate(dateString) {
+    const date = new Date(dateString + 'T00:00:00');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
   document.addEventListener("DOMContentLoaded", async function () {
-    async function carregarAssociados() {
-      const associados = [
-        { id: 1, nome: "João Silva" },
-        { id: 2, nome: "Maria Oliveira" },
-        { id: 3, nome: "Carlos Souza" }
-      ];
-      const lista = document.getElementById("associados-list");
-      lista.innerHTML = "";
-      associados.forEach(associado => {
-        const associadoItem = document.createElement("div");
-        associadoItem.className = "associado-item";
-        const nome = document.createElement("div");
-        nome.className = "associado-nome";
-        nome.textContent = associado.nome;
-        const toggle = document.createElement("label");
-        toggle.className = "toggle-presenca";
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.dataset.associadoId = associado.id;
-        const slider = document.createElement("span");
-        slider.className = "slider";
-        toggle.appendChild(input);
-        toggle.appendChild(slider);
-        associadoItem.appendChild(nome);
-        associadoItem.appendChild(toggle);
-        lista.appendChild(associadoItem);
-      });
-    }
-
-    async function carregarChamadas() {
-      const chamadas = [
-        { id: 1, data: "2025-02-25", total: 20, presentes: 18 },
-        { id: 2, data: "2025-02-20", total: 20, presentes: 20 },
-        { id: 3, data: "2025-02-15", total: 20, presentes: 17 }
-      ];
-      const listaChamadas = document.getElementById("chamadas-list");
-      listaChamadas.innerHTML = "";
-      chamadas.forEach(chamada => {
-        const item = document.createElement("li");
-        item.className = "chamada-item";
-        item.textContent = `Chamada em ${chamada.data}: ${chamada.presentes} de ${chamada.total} presentes`;
-        listaChamadas.appendChild(item);
-      });
-    }
-
-    await carregarChamadas();
-
-    const modal = document.getElementById("modal-new-call");
-    const openModalBtn = document.getElementById("open-modal");
-    const closeModalBtn = document.getElementById("close-modal");
-
-    openModalBtn.addEventListener("click", async function () {
-      // Exibe o modal e carrega os associados
-      modal.style.display = "flex";
-      await carregarAssociados();
-    });
-
-    closeModalBtn.addEventListener("click", function () {
-      modal.style.display = "none";
-    });
-
-    window.addEventListener("click", function (event) {
-      if (event.target === modal) {
-        modal.style.display = "none";
+    const token = localStorage.getItem("token");
+    const userType = localStorage.getItem("userType"); 
+    if (userType !== "2") {
+      const btnNovaChamada = document.getElementById("open-modal-chamada");
+      if (btnNovaChamada) {
+        btnNovaChamada.style.display = "none";
       }
-    });
+    }
 
-    document.getElementById("salvar-chamada").addEventListener("click", async function () {
-      const checkboxes = document.querySelectorAll("#associados-list input[type='checkbox']");
-      const presencas = [];
-      checkboxes.forEach(checkbox => {
-        presencas.push({
-          associado_id: checkbox.dataset.associadoId,
-          presenca: checkbox.checked,
+    async function fetchChamadas() {
+      try {
+        const response = await fetch("/chamadas/api", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
         });
-      });
-      const dataHoje = new Date().toISOString().split('T')[0];
-      const response = await fetch("/chamadas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ presencas, data: dataHoje }),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        alert("Chamada salva com sucesso!");
-        await carregarChamadas();
-        modal.style.display = "none";
-      } else {
-        alert("Erro: " + result.message);
+        if (!response.ok) {
+          throw new Error("Erro ao buscar chamadas");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(error);
+        return [];
       }
-    });
+    }
+
+    async function renderChamadas() {
+      const chamadas = await fetchChamadas();
+      const tbody = document.getElementById("chamadas-list");
+      tbody.innerHTML = "";
+      if (chamadas.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.setAttribute("colspan", "4");
+        td.className = "no-records";
+        td.textContent = "Sem registros";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        chamadas.forEach(chamada => {
+          const tr = document.createElement("tr");
+
+          const tdId = document.createElement("td");
+          tdId.textContent = chamada.id;
+          tr.appendChild(tdId);
+
+          const tdData = document.createElement("td");
+          tdData.textContent = formatDate(chamada.data);
+          tr.appendChild(tdData);
+
+          const tdPresenca = document.createElement("td");
+          tdPresenca.textContent = chamada.presenca ? "Presente" : "Ausente";
+          tr.appendChild(tdPresenca);
+
+          const tdAssociado = document.createElement("td");
+          tdAssociado.textContent = chamada.associado?.nome || chamada.associadoId;
+          tr.appendChild(tdAssociado);
+
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    renderChamadas();
+
+    async function carregarAssociados() {
+      try {
+        const response = await fetch("/associado", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar associados");
+        }
+        const associados = await response.json();
+        const lista = document.getElementById("associados-list");
+        lista.innerHTML = "";
+        associados.forEach(associado => {
+          const divItem = document.createElement("div");
+          divItem.className = "associado-item";
+
+          const spanNome = document.createElement("span");
+          spanNome.className = "associado-nome";
+          spanNome.textContent = associado.nome;
+
+          const label = document.createElement("label");
+          label.className = "toggle-presenca";
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.dataset.associadoId = associado.id;
+          const slider = document.createElement("span");
+          slider.className = "slider";
+          label.appendChild(input);
+          label.appendChild(slider);
+
+          divItem.appendChild(spanNome);
+          divItem.appendChild(label);
+          lista.appendChild(divItem);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar associados:", error);
+      }
+    }
+
+    if (userType === "2") {
+      const modal = document.getElementById("modal-new-call");
+      const openModalBtn = document.getElementById("open-modal-chamada");
+      if (openModalBtn) {
+        openModalBtn.addEventListener("click", async function () {
+          modal.style.display = "flex";
+          await carregarAssociados();
+        });
+      }
+      document.getElementById("close-modal-chamada").addEventListener("click", function () {
+        modal.style.display = "none";
+      });
+      window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+      document.getElementById("salvar-chamada").addEventListener("click", async function () {
+        const checkboxes = document.querySelectorAll("#associados-list input[type='checkbox']");
+        const presencas = [];
+        checkboxes.forEach(checkbox => {
+          presencas.push({
+            associado_id: checkbox.dataset.associadoId,
+            presenca: checkbox.checked
+          });
+        });
+        const dataHoje = new Date().toISOString().split('T')[0];
+        try {
+          const response = await fetch("/chamadas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ presencas, data: dataHoje })
+          });
+          const result = await response.json();
+          if (response.ok) {
+            alert("Chamada salva com sucesso!");
+            await renderChamadas();
+            modal.style.display = "none";
+          } else {
+            alert("Erro: " + result.message);
+          }
+        } catch (error) {
+          alert("Erro ao cadastrar chamada: " + error.message);
+        }
+      });
+    }
   });
 </script>

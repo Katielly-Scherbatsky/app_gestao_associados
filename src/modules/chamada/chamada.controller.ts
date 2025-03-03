@@ -1,18 +1,16 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
-  Put,
   Render,
-  UseFilters,
   Request,
+  UseFilters,
 } from "@nestjs/common";
 import { AuthExceptionFilter } from "src/common/filters/auth-exceptions.filter";
-import { CreateChamadaDto, UpdateChamadaDto } from "./chamada.dto";
+import { CreateChamadaDto } from "./chamada.dto";
 import { ChamadaService } from "./chamada.service";
 
 @Controller("chamadas")
@@ -21,10 +19,15 @@ export class ChamadaController {
   constructor(private readonly chamadaService: ChamadaService) {}
 
   @Get()
-  @Render("chamada")
+  @Render("auth/chamada")
   async findAll(@Request() req) {
     const chamadas = await this.chamadaService.findAll();
     return { user: req.user, chamadas };
+  }
+
+  @Get("api")
+  async findAllApi() {
+    return await this.chamadaService.findAll();
   }
 
   @Post()
@@ -42,23 +45,5 @@ export class ChamadaController {
       return results;
     }
     return this.chamadaService.create(payload);
-  }
-
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number) {
-    return this.chamadaService.findOne(id);
-  }
-
-  @Put(":id")
-  async update(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() payload: UpdateChamadaDto
-  ) {
-    return this.chamadaService.update(id, payload);
-  }
-
-  @Delete(":id")
-  async remove(@Param("id", ParseIntPipe) id: number) {
-    return this.chamadaService.remove(id);
   }
 }

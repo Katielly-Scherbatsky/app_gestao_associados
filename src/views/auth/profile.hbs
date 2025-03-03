@@ -5,30 +5,34 @@
       <div class="subtitle">Seus dados</div>
     </div>
     <form id="cadastro-form" class="form-section">
-      <div class="form-container">
-        <div class="input-group">
-          <label for="nome" class="visually-hidden">Nome</label>
-          <input id="nome" class="input-field" type="text" placeholder="Nome" required disabled>
+      <div class="form-container-perfil">
+        <div class="form-column">
+          <div class="input-group">
+            <label for="nome" class="visually-hidden">Nome</label>
+            <input id="nome" class="input-field" type="text" placeholder="Nome" required disabled>
+          </div>
+          <div class="input-item">
+            <label for="cpf" class="visually-hidden">CPF</label>
+            <input id="cpf" class="input-field" type="text" placeholder="CPF" required disabled>
+          </div>
+          <div class="input-item">
+            <label for="telefone" class="visually-hidden">Telefone</label>
+            <input id="telefone" class="input-field" type="text" placeholder="Telefone" required disabled>
+          </div>
         </div>
-        <div class="input-item">
-          <label for="cpf" class="visually-hidden">CPF</label>
-          <input id="cpf" class="input-field" type="text" placeholder="CPF" required disabled>
-        </div>
-        <div class="input-item">
-          <label for="telefone" class="visually-hidden">Telefone</label>
-          <input id="telefone" class="input-field" type="text" placeholder="Telefone" required disabled>
-        </div>
-        <div class="input-item">
-          <label for="faculdade_id" class="visually-hidden">Faculdade</label>
-          <input id="faculdade_id" class="input-field" type="text" placeholder="Faculdade" required disabled>
-        </div>
-        <div class="input-item">
-          <label for="curso" class="visually-hidden">Curso</label>
-          <input id="curso" class="input-field" type="text" placeholder="Curso" required disabled>
-        </div>
-        <div class="input-item">
-          <label for="poltrona" class="visually-hidden">Poltrona</label>
-          <input id="poltrona" class="input-field" type="number" placeholder="Poltrona" required disabled>
+        <div class="form-column">
+          <div class="input-item">
+            <label for="faculdade_id" class="visually-hidden">Faculdade</label>
+            <input id="faculdade_id" class="input-field" type="text" placeholder="Faculdade" required disabled>
+          </div>
+          <div class="input-item">
+            <label for="curso" class="visually-hidden">Curso</label>
+            <input id="curso" class="input-field" type="text" placeholder="Curso" required disabled>
+          </div>
+          <div class="input-item">
+            <label for="poltrona" class="visually-hidden">Poltrona</label>
+            <input id="poltrona" class="input-field" type="number" placeholder="Poltrona" required disabled>
+          </div>
         </div>
       </div>
       <div class="button-container">
@@ -37,6 +41,20 @@
     </form>
   </div>
 </div>
+
+<style>
+  .form-container {
+    display: flex;
+    gap: 20px;
+  }
+
+  .form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+</style>
 
 <script>
   document.addEventListener("DOMContentLoaded", async function () {
