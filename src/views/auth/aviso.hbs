@@ -4,7 +4,6 @@
       <div class="aviso-title">Avisos</div>
       <div class="subtitle">Confira os avisos já cadastrados</div>
       <div class="button-container" id="novo-aviso-container" style="margin-top: 20px;">
-        {{!-- Exibe o botão "Novo Aviso" somente para admin (usuário do tipo 2) --}}
         <button id="open-modal" class="submit-button">Novo Aviso</button>
       </div>
     </div>
@@ -19,13 +18,11 @@
         </tr>
       </thead>
       <tbody id="avisos-list">
-        {{!-- Linhas geradas dinamicamente --}}
       </tbody>
     </table>
   </div>
 </div>
 
-{{!-- Modal para Novo/Editar Aviso (somente para admin) --}}
 <div class="modal" id="modal-new-aviso" style="display: none;">
   <div class="modal-content">
     <span class="close-button" id="close-modal">&times;</span>
@@ -75,6 +72,7 @@
     const token = localStorage.getItem("token");
     const currentUserId = localStorage.getItem("userId");
     const userType = localStorage.getItem("userType");
+
     if (userType !== "2") {
       document.getElementById("novo-aviso-container").style.display = "none";
       document.getElementById("acoes-header").style.display = "none";
@@ -130,7 +128,7 @@
           tr.appendChild(tdDescricao);
 
           const tdAcoes = document.createElement("td");
-          if (userType === "2" && String(a.associadoId) === currentUserId) {
+          if (userType === "2") {
             const btnEdit = document.createElement("button");
             btnEdit.className = "action-btn edit";
             btnEdit.innerHTML = '<i class="icon-edit"></i>';

@@ -4,6 +4,22 @@
   <a href="/auth/chamada"><i class="icon-call"></i> Chamada</a>
   <a href="/auth/aviso"><i class="icon-bell"></i> Avisos</a>
   <a href="/auth/solicitacao"><i class="icon-list"></i> Solicitações</a>
-  <a href=" /auth/profile"><i class="icon-user"></i><span id="user-name"></span></a>
+  <a href="/auth/faculdade" id="faculdade-link" style="display: none;">
+    <i class="icon-school"></i> Faculdades
+  </a>
+  <a href="/auth/associados" id="associados-link" style="display: none;">
+    <i class="icon-users"></i> Associados
+  </a>
+  <a href="/auth/profile"><i class="icon-user"></i><span id="user-name"></span></a>
   <a href="/auth/login" id="logout-link"><i class="icon-logout"></i> Sair</a>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const userType = localStorage.getItem("userType");
+    if (userType === "2") {
+      document.getElementById("faculdade-link").style.display = "block";
+      document.getElementById("associados-link").style.display = "block";
+    }
+  });
+</script>

@@ -1,0 +1,95 @@
+<div class="aviso-section">
+  <div class="aviso-container">
+    <div class="title-section">
+      <div class="aviso-title">Associados</div>
+      <div class="subtitle">Confira os associados cadastrados</div>
+    </div>
+    <table id="associados-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>Faculdade</th>
+          <th>Curso</th>
+          <th>Poltrona</th>
+        </tr>
+      </thead>
+      <tbody id="associados-list">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    const token = localStorage.getItem("token");
+
+    async function fetchAssociados() {
+      try {
+        const response = await fetch("/associado", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar associados");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    async function renderAssociados() {
+      const associados = await fetchAssociados();
+      const tbody = document.getElementById("associados-list");
+      tbody.innerHTML = "";
+      if (associados.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.setAttribute("colspan", "7");
+        td.className = "no-records";
+        td.textContent = "Sem registros";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        associados.forEach(assoc => {
+          const tr = document.createElement("tr");
+
+          const tdId = document.createElement("td");
+          tdId.textContent = assoc.id;
+          tr.appendChild(tdId);
+
+          const tdNome = document.createElement("td");
+          tdNome.textContent = assoc.nome;
+          tr.appendChild(tdNome);
+
+          const tdCpf = document.createElement("td");
+          tdCpf.textContent = assoc.cpf;
+          tr.appendChild(tdCpf);
+
+          const tdTelefone = document.createElement("td");
+          tdTelefone.textContent = assoc.telefone;
+          tr.appendChild(tdTelefone);
+
+          const tdFaculdade = document.createElement("td");
+          tdFaculdade.textContent = assoc.faculdade?.nome || assoc.faculdadeId;
+          tr.appendChild(tdFaculdade);
+
+          const tdCurso = document.createElement("td");
+          tdCurso.textContent = assoc.curso;
+          tr.appendChild(tdCurso);
+
+          const tdPoltrona = document.createElement("td");
+          tdPoltrona.textContent = assoc.poltrona;
+          tr.appendChild(tdPoltrona);
+
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    renderAssociados();
+  });
+</script>

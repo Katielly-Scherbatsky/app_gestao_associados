@@ -96,4 +96,18 @@ export class AuthController {
   solicitacao() {
     return { title: "Solicitações" };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("faculdade")
+  @Render("auth/faculdade")
+  faculdade() {
+    return { title: "Faculdade" };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("associados")
+  @Render("auth/associados")
+  associados() {
+    return { title: "Associados" };
+  }
 }

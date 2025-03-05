@@ -13,17 +13,19 @@
           </div>
           <div class="input-item">
             <label for="cpf" class="visually-hidden">CPF</label>
-            <input id="cpf" class="input-field" type="text" placeholder="CPF" required disabled>
+            <input id="cpf" class="input-field" type="text" placeholder="000.000.000-00" required disabled maxlength="14">
           </div>
           <div class="input-item">
             <label for="telefone" class="visually-hidden">Telefone</label>
-            <input id="telefone" class="input-field" type="text" placeholder="Telefone" required disabled>
+            <input id="telefone" class="input-field" type="text" placeholder="(00) 00000-0000" required disabled maxlength="15">
           </div>
         </div>
         <div class="form-column">
           <div class="input-item">
             <label for="faculdade_id" class="visually-hidden">Faculdade</label>
-            <input id="faculdade_id" class="input-field" type="text" placeholder="Faculdade" required disabled>
+            <select id="faculdade_id" class="input-field" required disabled>
+              <option value="">Selecione a Faculdade</option>
+            </select>
           </div>
           <div class="input-item">
             <label for="curso" class="visually-hidden">Curso</label>
@@ -42,24 +44,41 @@
   </div>
 </div>
 
-<style>
-  .form-container {
-    display: flex;
-    gap: 20px;
-  }
-
-  .form-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-</style>
-
 <script>
   document.addEventListener("DOMContentLoaded", async function () {
+    const token = localStorage.getItem("token");
+
+    function formatCPF(value) {
+      value = value.replace(/\D/g, '');
+      if (value.length > 11) value = value.substring(0, 11);
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      return value;
+    }
+
+    function formatTelefone(value) {
+      value = value.replace(/\D/g, '');
+      if (value.length > 11) value = value.substring(0, 11);
+      if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      } else {
+        value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+      }
+      return value;
+    }
+
+    const cpfInput = document.getElementById("cpf");
+    cpfInput.addEventListener("input", function (e) {
+      e.target.value = formatCPF(e.target.value);
+    });
+
+    const telefoneInput = document.getElementById("telefone");
+    telefoneInput.addEventListener("input", function (e) {
+      e.target.value = formatTelefone(e.target.value);
+    });
+
     async function fetchAssociadoData(userId) {
-      const token = localStorage.getItem("token");
       try {
         const response = await fetch(`/associado/${userId}`, {
           headers: {
@@ -76,15 +95,45 @@
       }
     }
 
+    async function fetchFaculdadesList() {
+      try {
+        const response = await fetch('/faculdades', {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar faculdades");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    async function populateFaculdadesDropdown() {
+      const select = document.getElementById("faculdade_id");
+      const faculdades = await fetchFaculdadesList();
+      select.innerHTML = `<option value="">Selecione a Faculdade</option>`;
+      faculdades.forEach(faculdade => {
+        const option = document.createElement("option");
+        option.value = faculdade.id;
+        option.textContent = faculdade.nome;
+        select.appendChild(option);
+      });
+    }
+
     async function preencherFormulario() {
       const userId = localStorage.getItem("userId");
       if (userId) {
+        await populateFaculdadesDropdown();
         const associado = await fetchAssociadoData(userId);
         if (associado) {
           document.getElementById("nome").value = associado.nome || "";
           document.getElementById("cpf").value = associado.cpf || "";
           document.getElementById("telefone").value = associado.telefone || "";
-          document.getElementById("faculdade_id").value = associado.faculdade ? associado.faculdade.nome : associado.faculdadeId;
+          const faculdadeSelect = document.getElementById("faculdade_id");
+          const faculdadeId = associado.faculdade ? associado.faculdade.id : associado.faculdadeId;
+          faculdadeSelect.value = faculdadeId;
           document.getElementById("curso").value = associado.curso || "";
           document.getElementById("poltrona").value = associado.poltrona || "";
         }
@@ -94,16 +143,15 @@
     preencherFormulario();
 
     const editarBtn = document.getElementById("editar-btn");
-    const cadastroForm = document.getElementById("cadastro-form");
 
     editarBtn.addEventListener("click", async function () {
+      const inputs = document.querySelectorAll("#cadastro-form .input-field");
       if (this.textContent === "Editar") {
-        const inputs = document.querySelectorAll("#cadastro-form .input-field");
         inputs.forEach(input => input.disabled = false);
+        await populateFaculdadesDropdown();
         this.textContent = "Salvar";
       } else {
         const userId = localStorage.getItem("userId");
-        const token = localStorage.getItem("token");
         const data = {
           nome: document.getElementById("nome").value,
           cpf: document.getElementById("cpf").value,
@@ -125,7 +173,6 @@
             throw new Error("Erro ao atualizar os dados");
           }
           alert("Dados atualizados com sucesso!");
-          const inputs = document.querySelectorAll("#cadastro-form .input-field");
           inputs.forEach(input => input.disabled = true);
           this.textContent = "Editar";
         } catch (error) {

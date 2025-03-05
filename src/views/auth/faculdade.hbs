@@ -1,0 +1,208 @@
+<div class="aviso-section">
+  <div class="aviso-container">
+    <div class="title-section">
+      <div class="aviso-title">Faculdades</div>
+      <div class="subtitle">Confira as faculdades já cadastradas</div>
+      <div class="button-container" id="nova-faculdade-container" style="margin-top: 20px;">
+        <button id="open-modal-faculdade" class="submit-button">Nova Faculdade</button>
+      </div>
+    </div>
+    <table id="faculdades-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nome</th>
+          <th id="acoes-header" style="width: 90px; text-align: center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="faculdades-list">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal" id="modal-new-faculdade" style="display: none;">
+  <div class="modal-content">
+    <span class="close-button" id="close-modal-faculdade">&times;</span>
+    <div class="title-section">
+      <div class="faculdade-title" id="modal-faculdade-title">Nova Faculdade</div>
+      <div class="subtitle">Preencha os dados da faculdade</div>
+    </div>
+    <form id="cadastro-faculdade-form" class="form-section">
+      <div class="form-container">
+        <div class="input-item">
+          <label for="nome">Nome</label>
+          <input id="nome" class="input-field" type="text" placeholder="Nome da faculdade" required>
+        </div>
+      </div>
+      <div class="button-container">
+        <button type="submit" class="submit-button" id="salvar-faculdade-btn">Cadastrar Faculdade</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let editFaculdadeId = null;
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const token = localStorage.getItem("token");
+    const currentUserId = localStorage.getItem("userId");
+    const userType = localStorage.getItem("userType");
+
+    if (userType !== "2") {
+      document.getElementById("nova-faculdade-container").style.display = "none";
+      document.getElementById("acoes-header").style.display = "none";
+    }
+
+    async function fetchFaculdades() {
+      try {
+        const response = await fetch("/faculdades", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error("Erro ao buscar faculdades");
+        return await response.json();
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    async function renderFaculdades() {
+      const faculdades = await fetchFaculdades();
+      const tbody = document.getElementById("faculdades-list");
+      tbody.innerHTML = "";
+
+      if (faculdades.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.setAttribute("colspan", userType === "2" ? "3" : "2");
+        td.className = "no-records";
+        td.textContent = "Sem registros";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        faculdades.forEach(f => {
+          const tr = document.createElement("tr");
+
+          const tdId = document.createElement("td");
+          tdId.textContent = f.id;
+          tr.appendChild(tdId);
+
+          const tdNome = document.createElement("td");
+          tdNome.textContent = f.nome;
+          tr.appendChild(tdNome);
+
+          const tdAcoes = document.createElement("td");
+          if (userType === "2") {
+            const btnEdit = document.createElement("button");
+            btnEdit.className = "action-btn edit";
+            btnEdit.innerHTML = '<i class="icon-edit"></i>';
+            btnEdit.addEventListener("click", async function () {
+              editFaculdadeId = f.id;
+              document.getElementById("modal-faculdade-title").textContent = "Editar Faculdade";
+              document.getElementById("salvar-faculdade-btn").textContent = "Salvar Alterações";
+              try {
+                const response = await fetch(`/faculdades/${f.id}`, {
+                  headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error("Erro ao buscar dados da faculdade");
+                const faculdadeData = await response.json();
+                document.getElementById("nome").value = faculdadeData.nome || "";
+                document.getElementById("modal-new-faculdade").style.display = "flex";
+              } catch (error) {
+                alert("Erro ao carregar dados da faculdade: " + error.message);
+              }
+            });
+            tdAcoes.appendChild(btnEdit);
+
+            const btnDelete = document.createElement("button");
+            btnDelete.className = "action-btn delete";
+            btnDelete.innerHTML = '<i class="icon-trash"></i>';
+            btnDelete.addEventListener("click", async function () {
+              if (confirm("Deseja excluir esta faculdade?")) {
+                try {
+                  const response = await fetch(`/faculdades/${f.id}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${token}` }
+                  });
+                  if (response.ok) {
+                    alert("Faculdade excluída com sucesso!");
+                    await renderFaculdades();
+                  } else {
+                    alert("Erro ao excluir faculdade");
+                  }
+                } catch (error) {
+                  alert("Erro: " + error.message);
+                }
+              }
+            });
+            tdAcoes.appendChild(btnDelete);
+          }
+          tr.appendChild(tdAcoes);
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    renderFaculdades();
+
+    if (userType === "2") {
+      const modal = document.getElementById("modal-new-faculdade");
+      document.getElementById("open-modal-faculdade").addEventListener("click", function () {
+        editFaculdadeId = null;
+        document.getElementById("modal-faculdade-title").textContent = "Nova Faculdade";
+        document.getElementById("salvar-faculdade-btn").textContent = "Cadastrar Faculdade";
+        document.getElementById("cadastro-faculdade-form").reset();
+        modal.style.display = "flex";
+      });
+      document.getElementById("close-modal-faculdade").addEventListener("click", function () {
+        modal.style.display = "none";
+      });
+      window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+      document.getElementById("cadastro-faculdade-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const nome = document.getElementById("nome").value;
+        const faculdadePayload = { nome };
+        try {
+          let response;
+          if (editFaculdadeId) {
+            response = await fetch(`/faculdades/${editFaculdadeId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify(faculdadePayload)
+            });
+          } else {
+            response = await fetch("/faculdades", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify(faculdadePayload)
+            });
+          }
+          const result = await response.json();
+          if (response.ok) {
+            alert(editFaculdadeId ? "Faculdade atualizada com sucesso!" : "Faculdade cadastrada com sucesso!");
+            this.reset();
+            modal.style.display = "none";
+            editFaculdadeId = null;
+            await renderFaculdades();
+          } else {
+            alert("Erro: " + result.message);
+          }
+        } catch (error) {
+          alert("Erro ao salvar faculdade: " + error.message);
+        }
+      });
+    }
+  });
+</script>
