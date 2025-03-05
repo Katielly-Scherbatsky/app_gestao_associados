@@ -40,7 +40,7 @@ yarn start:dev
 ```
 
 ```
-[http://localhost:3001/api](http://localhost:3001/auth/login)
+http://localhost:3001/api
 ```
 
 ## Considerações Finais
